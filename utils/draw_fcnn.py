@@ -2,6 +2,7 @@
 
 import matplotlib.pyplot as plt
 import sys
+from net_diagram import *
 
 """
 Created by @author: craffel
@@ -61,8 +62,16 @@ def draw_neural_net(ax, left, right, bottom, top, layer_sizes, layer_text=None):
         for m in range(layer_size):
             x = n*h_spacing + left
             y = layer_top - m*v_spacing
+
+            ### Some stuff I've added as proof-of-concept
+            if m == 0:
+            	node_color = 'b'
+            else:
+            	node_color = 'w'
+            ###
+
             circle = plt.Circle((x,y), v_spacing/4.,
-                                color='b', ec='k', zorder=4)
+                                color=node_color, ec='k', zorder=4)
             ax.add_artist(circle)
             # Node annotations
             if layer_text:
@@ -90,12 +99,16 @@ def main():
 	# print(y)
 
 	# Need empty strings for unlabeled nodes at start, but not at end
+	
 	node_text = ['','','','h1','h2','h3','h4','h5']
 
 	fig = plt.figure(figsize=(12, 12))
 	ax = fig.gca()
 	draw_neural_net(ax, .1, .9, .1, .9, [3, 5, 2], node_text)
 	plt.show()
+	test = NetworkDiagram()
+	test.set_parameters_from_json("test.json")
+
 
 if __name__ == '__main__':
 	main()
