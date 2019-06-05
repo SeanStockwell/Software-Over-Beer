@@ -20,14 +20,6 @@ Modifications:
 """    
 
 
-
-def create_fcnn_dims():
-	number_of_layers = 2 + num_hidden_layers
-	# TODO finish this ... 
-	# Want to be able to do this from command line or json file
-
-
-
 def draw_neural_net(ax, left, right, bottom, top, layer_sizes, layer_text=None):
     '''
     Draw a neural network cartoon using matplotilb.
@@ -100,14 +92,14 @@ def main():
 
 	# Need empty strings for unlabeled nodes at start, but not at end
 	
-	node_text = ['','','','h1','h2','h3','h4','h5']
+	# node_text = ['','','','h1','h2','h3','h4','h5']
 
-	fig = plt.figure(figsize=(12, 12))
-	ax = fig.gca()
-	draw_neural_net(ax, .1, .9, .1, .9, [3, 5, 2], node_text)
-	plt.show()
+	# fig = plt.figure(figsize=(12, 12))
+	# ax = fig.gca()
+	# draw_neural_net(ax, .1, .9, .1, .9, [3, 5, 2], node_text)
+	# plt.show()
 	test = NetworkDiagram()
-	test.set_parameters_from_json("test.json")
+	test2 = NetworkDiagram(json_file_name="test.json")
 
 
 if __name__ == '__main__':
