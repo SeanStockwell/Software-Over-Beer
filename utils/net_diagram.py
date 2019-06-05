@@ -49,9 +49,14 @@ class NetworkDiagram:
 		# Create a network full of default nodes
 		# TODO: incorporate activation types
 		self.nodes = []
-		for layer_size in self.n_layer_sizes:
+		for i, layer_size in enumerate(self.n_layer_sizes):
+			act_fn = None
+			if str(i) in self.activation_fns and self.activation_fns[str(i)]:
+				act_fn = self.activation_fns[str(i)]
+
 			self.nodes.append([NetworkNode(color=self.default_color,
-				edge_color=self.default_edge_color) for i in range(layer_size)]
+				edge_color=self.default_edge_color, activation_f=act_fn)
+				for i in range(layer_size)]
 				)
 
 

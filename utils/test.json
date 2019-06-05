@@ -3,5 +3,7 @@
 	"n_layer_sizes": [1,1,1],
 	"default_color": "w",
 	"default_edge_color": "k",
-	"activation_fns":{}
+	"activation_fns":{
+		"1": "test"
+	}
 }
