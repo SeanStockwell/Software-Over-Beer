@@ -58,19 +58,19 @@ def draw_neural_net(ax, network_diagram, edge_text=None, left=0.1, right=0.9, bo
 			y = layer_top - m*v_spacing
 
 			### Can simplify some stuff here (unnecessary local vars)
-			node_color = network_diagram.nodes[n][m].color
+			node = network_diagram.nodes[n][m]
 			node_ec = network_diagram.nodes[n][m].edge_color
 
 			# For now, layer_text will only be activation functions
 			layer_text = network_diagram.nodes[n][m].activation_f
 			###
 
-			circle = plt.Circle((x,y), v_spacing/4.,
-								color=node_color, ec=node_ec, zorder=4)
-			ax.add_artist(circle)
-			# Node annotations
 			if layer_text:
 				plt.annotate(layer_text, xy=(x, y), zorder=5, ha='center', va='center')
+				
+			plt_figure = node.get_figure(x,y, v_spacing/4.)
+			ax.add_artist(plt_figure)
+			
 
 
 	# Edges
