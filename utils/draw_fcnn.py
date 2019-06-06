@@ -22,7 +22,7 @@ Modifications:
 
 rad2deg = 180 / (math.pi)
 
-def draw_neural_net(ax, network_diagram, edge_text=None, left=0.1, right=0.9, bottom=0.1, top=0.9):
+def draw_neural_net(ax, network_diagram, edge_text=None, left=0.1, right=0.90, bottom=0.1, top=0.9):
 	'''
 	Draw a neural network cartoon using matplotilb.
 	
@@ -48,13 +48,33 @@ def draw_neural_net(ax, network_diagram, edge_text=None, left=0.1, right=0.9, bo
 	'''
 	n_layers = network_diagram.n_layers
 	v_spacing = (top - bottom)/float(max(network_diagram.n_layer_sizes))
-	h_spacing = (right - left)/float(n_layers - 1)
+	radius = v_spacing / 4.
+
+	space_for_activation_fns = 2.25*radius*float(len(network_diagram.activation_fns))
+	h_spacing = (right - left - space_for_activation_fns)/float(n_layers - 1)
 	ax.axis('off')
+	# Center of the activation node (or non-activation if no activation fn)
+	node_x_centers_right = []
+	# Center of the non-activation node
+	node_x_centers_left = []
+
 	# Nodes
 	for n, layer_size in enumerate(network_diagram.n_layer_sizes):
 		layer_top = v_spacing*(layer_size - 1)/2. + (top + bottom)/2.
+
+		x_center = left + radius
+
+		if n > 0:
+			# new x coordinate is one horizontal space unit right from the
+			# right of the last node
+			x_center = h_spacing + node_x_centers_right[n-1]
+		
+		# Here we add what would be the center of the non-activation node
+		node_x_centers_left.append(x_center)
+
+		layer_includes_activation = False
 		for m in range(layer_size):
-			x = n*h_spacing + left
+			
 			y = layer_top - m*v_spacing
 
 			### Can simplify some stuff here (unnecessary local vars)
@@ -66,32 +86,50 @@ def draw_neural_net(ax, network_diagram, edge_text=None, left=0.1, right=0.9, bo
 			###
 
 			if layer_text:
-				plt.annotate(layer_text, xy=(x, y), zorder=5, ha='center', va='center')
+				plt.annotate(layer_text, xy=(x_center, y), zorder=5, ha='center', va='center')
 				
-			plt_figure = node.get_figure(x,y, v_spacing/4.)
-			ax.add_artist(plt_figure)
-			
+			plt_figures = node.get_figure(x_center,y, radius)
+			for plt_figure in plt_figures:
+				ax.add_artist(plt_figure)
+
+			# Add a line between node and activation function
+			if len(plt_figures) > 1:
+				line = plt.Line2D([x_center + radius, x_center + 1.25*radius],[y, y],c='k')
+				ax.add_artist(line)
+				layer_includes_activation = True
+
+		if layer_includes_activation:
+			x_center = x_center + 2.25*radius
+
+		node_x_centers_right.append(x_center)
 
 
 	# Edges
-	for n, (layer_size_a, layer_size_b) in enumerate(
-		zip(network_diagram.n_layer_sizes[:-1],network_diagram.n_layer_sizes[1:])):
+	for n in range(1, network_diagram.n_layers):
+	#for n, (layer_size_a, layer_size_b) in enumerate(
+	#	zip(network_diagram.n_layer_sizes[:-1],network_diagram.n_layer_sizes[1:])):
+
+		layer_size_a = network_diagram.n_layer_sizes[n-1]
+		layer_size_b = network_diagram.n_layer_sizes[n]
+		
 		layer_top_a = v_spacing*(layer_size_a - 1)/2. + (top + bottom)/2.
 		layer_top_b = v_spacing*(layer_size_b - 1)/2. + (top + bottom)/2.
 
+		# Include string on top of top edge between layers
 		if edge_text:
-			x_center = (n*h_spacing + left + (n + 1)*h_spacing + left) / 2.0
+			x_center = (node_x_centers_right[n-1] + node_x_centers_left[n]) / 2.0
 			y_center = (layer_top_a + layer_top_b) / 2.0
 
-			x_delta = ((n + 1)*h_spacing + left) - (n*h_spacing + left)
+			x_delta = node_x_centers_left[n] -node_x_centers_right[n-1]
 			y_delta = layer_top_b - layer_top_a
 			rotation_deg = rad2deg * math.atan2(y_delta, x_delta)
 			plt.text(x_center, y_center, edge_text,
 				rotation=rotation_deg, horizontalalignment='center')
 
+
 		for m in range(layer_size_a):
 			for o in range(layer_size_b):
-				line = plt.Line2D([n*h_spacing + left, (n + 1)*h_spacing + left],
+				line = plt.Line2D([node_x_centers_right[n-1], node_x_centers_left[n]],
 								  [layer_top_a - m*v_spacing, layer_top_b - o*v_spacing], c='k')
 					# print(x_center, y_center)
 					# print(rotation_deg)

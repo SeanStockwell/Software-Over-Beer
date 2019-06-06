@@ -23,10 +23,15 @@ class NetworkNode:
 
 
 	def get_figure(self, x_center, y_center, radius):
-		if self.activation_f:
-			return self.get_rhombus(x_center, y_center, radius)
+		'''
+		Returns a list of matplotlib figures
+		'''
+		circle_fig = self.get_circle(x_center, y_center, radius)
+		if self.activation_f: #TODO, enable a 'classic neural network' function
+			rhombus_fig = self.get_rhombus(x_center + 2.25*radius, y_center, radius)
+			return [circle_fig, rhombus_fig]
 		else:
-			return self.get_circle(x_center, y_center, radius)
+			return [circle_fig]
 
 
 	def get_rhombus(self, x_center, y_center, radius):
